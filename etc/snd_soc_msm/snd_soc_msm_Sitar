@@ -3210,10 +3210,10 @@ SectionDevice
 		'LINEOUT1 Volume':1:100
 		'LINEOUT2 Volume':1:100
 		'RX1 MIX1 INP1':0:RX1
-		'RX1 Digital Volume':1:78
+		'RX1 Digital Volume':1:70
 		'PMIC SPK Gain':0:POS_10_DB
-		'RX2 Digital Volume':1:67
-		'RX3 Digital Volume':1:67
+		'RX2 Digital Volume':1:64.5
+		'RX3 Digital Volume':1:64.5
 	EndSequence
 
 	DisableSequence
