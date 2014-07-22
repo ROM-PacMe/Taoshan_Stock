@@ -3,3 +3,4 @@
     <library name="com.sony.smallapp.framework"
             file="/system/framework/com.sony.smallapp.jar"/>
 </permissions>
+

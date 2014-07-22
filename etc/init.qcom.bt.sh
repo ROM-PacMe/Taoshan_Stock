@@ -1,5 +1,5 @@
 #!/system/bin/sh
-# Copyright (c) 2009-2012, Code Aurora Forum. All rights reserved.
+# Copyright (c) 2009-2013, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -8,7 +8,7 @@
 #     * Redistributions in binary form must reproduce the above copyright
 #       notice, this list of conditions and the following disclaimer in the
 #       documentation and/or other materials provided with the distribution.
-#     * Neither the name of Code Aurora nor
+#     * Neither the name of The Linux Foundation nor
 #       the names of its contributors may be used to endorse or promote
 #       products derived from this software without specific prior written
 #       permission.
@@ -99,7 +99,12 @@ config_bt ()
         setprop ro.qualcomm.bluetooth.map true
         setprop ro.qualcomm.bluetooth.nap true
         setprop ro.qualcomm.bluetooth.sap true
-        setprop ro.qualcomm.bluetooth.dun false
+        case  $soc_hwid in
+            "109")
+                logi "Enabling BT-DUN for Fusion3"
+                setprop ro.qualcomm.bluetooth.dun true
+            ;;
+        esac
         ;;
     "msm")
         setprop ro.qualcomm.bluetooth.opp true
@@ -135,7 +140,7 @@ config_bt ()
   #Enable Bluetooth Profiles specific to target Dynamically
   case $target in
     "msm8960")
-       if [ "$btsoc" != "ath3k" ] && [ "$soc_hwid" != "130" ]
+       if [ "$btsoc" != "ath3k" ] && [ "$socid" != "130" ]
        then
            setprop ro.bluetooth.hfp.ver 1.6
            setprop ro.qualcomm.bt.hci_transport smd
@@ -144,6 +149,20 @@ config_bt ()
     *)
        ;;
   esac
+
+if [ -f /system/etc/bluetooth/stack.conf ]; then
+stack=`cat /system/etc/bluetooth/stack.conf`
+fi
+
+case "$stack" in
+    "bluez")
+	   logi "Bluetooth stack is $stack"
+	   setprop ro.qc.bluetooth.stack $stack
+        ;;
+    *)
+	   logi "Bluetooth stack is Bluedroid"
+        ;;
+esac
 
 }
 
@@ -194,6 +213,7 @@ shift $(($OPTIND-1))
 
 #Selectively Disable sleep
 BOARD=`getprop ro.board.platform`
+STACK=`getprop ro.qc.bluetooth.stack`
 
 # BR/EDR & LE power class configurations
 POWER_CLASS=`getprop qcom.bt.dev_power_class`
@@ -202,6 +222,16 @@ LE_POWER_CLASS=`getprop qcom.bt.le_dev_pwr_class`
 #find the transport type
 TRANSPORT=`getprop ro.qualcomm.bt.hci_transport`
 logi "Transport : $TRANSPORT"
+case $STACK in
+    "bluez")
+       logi "** Bluez stack **"
+    ;;
+    *)
+       logi "** Bluedroid stack **"
+       setprop bluetooth.status off
+    ;;
+esac
+
 
 case $POWER_CLASS in
   1) PWR_CLASS="-p 0" ;
@@ -231,7 +261,18 @@ eval $(/system/bin/hci_qcomm_init -e $PWR_CLASS $LE_PWR_CLASS && echo "exit_code
 
 case $exit_code_hci_qcomm_init in
   0) logi "Bluetooth QSoC firmware download succeeded, $BTS_DEVICE $BTS_TYPE $BTS_BAUD $BTS_ADDRESS";;
-  *) failed "Bluetooth QSoC firmware download failed" $exit_code_hci_qcomm_init;;
+  *) failed "Bluetooth QSoC firmware download failed" $exit_code_hci_qcomm_init;
+     case $STACK in
+         "bluez")
+            logi "** Bluez stack **"
+         ;;
+         *)
+            logi "** Bluedroid stack **"
+            setprop bluetooth.status off
+        ;;
+     esac
+
+     exit $exit_code_hci_qcomm_init;;
 esac
 
 # init does SIGTERM on ctl.stop for service
@@ -239,11 +280,29 @@ trap "kill_hciattach" TERM INT
 
 case $TRANSPORT in
     "smd")
-        echo 1 > /sys/module/hci_smd/parameters/hcismd_set
+       case $STACK in
+           "bluez")
+              logi "** Bluez stack **"
+              echo 1 > /sys/module/hci_smd/parameters/hcismd_set
+           ;;
+           *)
+              logi "** Bluedroid stack **"
+              setprop bluetooth.status on
+           ;;
+       esac
      ;;
      *)
         logi "start hciattach"
         start_hciattach
+        case $STACK in
+            "bluez")
+               logi "Bluetooth is turning On with Bluez stack "
+            ;;
+            *)
+               logi "** Bluedroid stack **"
+               setprop bluetooth.status on
+            ;;
+        esac
 
         wait $hciattach_pid
         logi "Bluetooth stopped"

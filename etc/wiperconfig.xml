@@ -2,8 +2,8 @@
 <!---/******************************************************************************
 * @file   wiperconfig.xml
 * @brief   Store configuration settings for Wiper Application
-*  Coppyright (C) 2009 QUALCOMM Incorporated.
-*  All Rights Reserved. QUALCOMM Proprietary and Confidential.
+*  Coppyright (C) 2009 Qualcomm Technologies, Inc.
+*  All Rights Reserved. Qualcomm Technologies Proprietary and Confidential.
 *  *****************************************************************************-->
 <wiperconfig>
     <configparam

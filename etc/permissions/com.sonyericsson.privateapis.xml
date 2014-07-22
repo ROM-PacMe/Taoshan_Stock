@@ -20,4 +20,6 @@
              file="/system/framework/com.sonyericsson.privateapis_impl.jar"/>
     <library name="com.sonyericsson.privateapis_9"
              file="/system/framework/com.sonyericsson.privateapis_impl.jar"/>
+    <library name="com.sonyericsson.privateapis_10"
+             file="/system/framework/com.sonyericsson.privateapis_impl.jar"/>
 </permissions>

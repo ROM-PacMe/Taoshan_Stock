@@ -2,5 +2,7 @@
 <permissions>
     <library name="com.sonyericsson.navigationbar"
         file="/system/framework/com.sonyericsson.navigationbar_impl.jar"/>
+    <library name="com.sonyericsson.navigationbar_2"
+        file="/system/framework/com.sonyericsson.navigationbar_impl.jar"/>
 </permissions>
 

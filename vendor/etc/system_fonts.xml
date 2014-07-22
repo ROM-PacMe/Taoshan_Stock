@@ -13,4 +13,13 @@
             <file>SoMABold.ttf</file>
         </fileset>
     </family>
+    <family>
+        <nameset>
+            <name>sst</name>
+        </nameset>
+        <fileset>
+            <file>SSTVietnamese-Roman.ttf</file>
+            <file>SSTVietnamese-Bold.ttf</file>
+        </fileset>
+   </family>
 </familyset>
